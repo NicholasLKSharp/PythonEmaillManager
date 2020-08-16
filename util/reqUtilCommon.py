@@ -31,6 +31,9 @@ def getMessages(service):
                                          pageToken=page_token).execute()
       messages.extend(response['messages'])
       x+=1
+      print("page " + str(x))
+      if x>10:
+        break
     return [messages, x]
 
 def getMessage(service, msgid):

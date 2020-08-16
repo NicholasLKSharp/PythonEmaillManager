@@ -13,7 +13,7 @@ def main():
 
     print("{0} mail senders found as duplicate".format(len(mailList) - len(uniqueSenders)))
     print("{0} unique senders".format(len(uniqueSenders)))
-    file = open(r"senders.txt","w")
+    file = open(r"senders.outpgetMessages","w")
     for mail in uniqueSenders:
         if not str(mail.sender[1]).strip()=='':
             file.write(mail.sender[1])
