@@ -1,27 +1,25 @@
 from __future__ import print_function
 import pickle
 import os.path
-from emailClass import Email
-from mailListReq import getSchoolMail
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-import reqUtil;
-
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+CONFIG_PATH = 'config/'
 
-def main():
+def login():
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
     """
     creds = None
+
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    if os.path.exists(CONFIG_PATH+'/token.pickle'):
+        with open(CONFIG_PATH+'/token.pickle', 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -29,29 +27,15 @@ def main():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                CONFIG_PATH + '/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
+        with open(CONFIG_PATH+'/token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
     s = build('gmail', 'v1', credentials=creds)
     print('ready')
-    mailList = getSchoolMail(s)
-    uniquesenders = []
-    for mail in mailList:
-        sender = mail.sender[0]
-        if not sender in uniquesenders:
-            uniquesenders.append(mail.sender)
-
-    file = open(r"senders.txt","w")
-    for sender in uniquesenders:
-        file.write(sender)
-        file.write('\n')
-    file.flush()
-    file.close()
-    
-    
+    return s
 
 if __name__ == '__main__':
     main()
